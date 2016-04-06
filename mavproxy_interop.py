@@ -28,7 +28,6 @@ class InteropModule(mp_module.MPModule):
                 "pitchspeed": m.pitchspeed,
                 "yawspeed": m.yawspeed
             }
-
             self.sock.sendto(json.dumps(response), (self.ip, self.port))
 
         elif mtype == "ALTITUDE":
@@ -40,11 +39,31 @@ class InteropModule(mp_module.MPModule):
                 "altitude_local": m.altitude_local,
                 "altitude_relative": m.altitude_relative,
                 "altitude_terrain": m.altitude_terrain,
-                "bottom_clearance": m.bottom_clearance,
+                "bottom_clearance": m.bottom_clearance
             }
-
             self.sock.sendto(json.dumps(response), (self.ip, self.port))
-
+            
+        elif mtype == "HIGHRES_IMU":
+            response = {       
+                "packet_id": 105,
+                "time_usec": m.time_usec,               
+                "xacc": m.xacc,
+                "yacc": m.yacc,
+                "zacc":	m.zacc,
+                "xgyro": m.xgyro,
+                "ygyro": m.ygyro,
+                "zgyro": m.zgyro,
+                "xmag": m.xmag,
+                "ymag": m.ymag,
+                "zmag": m.zmag,
+                "abs_pressure": m.abs_pressure,
+                "diff_pressure": m.diff_pressure,
+                "pressure_alt": m.pressure_alt,
+                "temperature": m.temperature,
+                "fields_updated": m.fields_updated
+            }
+            self.sock.sendto(json.dumps(response), (self.ip, self.port))
+            
         elif mtype == "GPS_RAW_INT":
             response = {
                 "packet_id": 24,
@@ -59,7 +78,21 @@ class InteropModule(mp_module.MPModule):
                 "cog": m.cog,
                 "satellites_visible": m.satellites_visible
             }
+            self.sock.sendto(json.dumps(response), (self.ip, self.port))
 
+        elif mtype == "GLOBAL_POSITION_INT":
+            response = {
+                "packet_id": 33,
+                "time_boot_ms": m.time_boot_ms,
+                "lat": m.lat,
+                "lon": m.lon,
+                "alt": m.alt,
+                "relative_alt": m.relative_alt,
+                "vx": m.vx,
+                "vy": m.vy,
+                "vz": m.vz,
+                "hdg": m.hdg
+            }
             self.sock.sendto(json.dumps(response), (self.ip, self.port))
 
 

@@ -99,6 +99,16 @@ class InteropModule(mp_module.MPModule):
             }
             self.sock.sendto(json.dumps(response), (self.ip, self.port))
 
+        elif mtype == "VFR_HUD":
+            response = {
+                "packet_id": 74,
+                "groundspeed": m.groundspeed,
+                "heading": m.heading,
+                "throttle": m.throttle,
+                "alt": m.alt,
+                "climb": m.climb
+            }
+            self.sock.sendto(json.dumps(response), (self.ip, self.port))
 
 def init(mpstate):
     return InteropModule(mpstate)

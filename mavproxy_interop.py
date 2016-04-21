@@ -109,6 +109,20 @@ class InteropModule(mp_module.MPModule):
                 "climb": m.climb
             }
             self.sock.sendto(json.dumps(response), (self.ip, self.port))
+            
+        elif mtype == "LOCAL_POSITION_NED":
+            response = {
+                "packet_id": 32,
+                "time_boot_ms": m.time_boot_ms,
+                "x": m.x,
+                "y": m.y,
+                "z": m.z,
+                "vx": m.vx,
+                "vy": m.vy,
+                "vz": m.vz
+            }
+
+            self.sock.sendto(json.dumps(response), (self.ip, self.port))    
 
 def init(mpstate):
     return InteropModule(mpstate)

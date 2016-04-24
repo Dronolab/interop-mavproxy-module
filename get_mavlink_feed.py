@@ -24,6 +24,7 @@ def get_gps_data():
         fifo.close()
         return packet
 
+
 #
 # Will return a dict containing the following properties
 #

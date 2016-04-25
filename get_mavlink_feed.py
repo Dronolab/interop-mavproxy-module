@@ -1,6 +1,12 @@
 import json
 import socket
 
+# Receiving IP
+ip = "127.0.0.1"
+
+# Receiving port
+port = 5006
+
 #
 # Will return a dict containing the following properties:
 #
@@ -18,7 +24,7 @@ import socket
 def get_gps_data():
     sock = socket.socket(socket.AF_INET, # Internet
                          socket.SOCK_DGRAM) # UDP
-    sock.bind((self.ip, self.port))
+    sock.bind((ip, port))
 
     while True:
         data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
@@ -41,7 +47,7 @@ def get_gps_data():
 def get_attitude():
     sock = socket.socket(socket.AF_INET, # Internet
                          socket.SOCK_DGRAM) # UDP
-    sock.bind((self.ip, self.port))
+    sock.bind((ip, port))
 
     while True:
         data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes

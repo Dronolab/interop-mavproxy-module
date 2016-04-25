@@ -18,7 +18,9 @@ class InteropModule(mp_module.MPModule):
         self.ip = "127.0.0.1"
 
         # The port you want to use in order to send your json via UDP
-        self.port = 5005
+        self.port = 5006
+
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def mavlink_packet(self, m):
         mtype = m.get_type()
@@ -35,7 +37,7 @@ class InteropModule(mp_module.MPModule):
                 "pitchspeed": m.pitchspeed,
                 "yawspeed": m.yawspeed
             }
-            self.write_to_pipe("/tmp/attitude_feed", response)
+            self.sock.sendto(json.dumps(response), (self.ip, self.port))
 
         # https://pixhawk.ethz.ch/mavlink/#GLOBAL_POSITION_INT
         elif mtype == "GLOBAL_POSITION_INT":
@@ -51,19 +53,7 @@ class InteropModule(mp_module.MPModule):
                 "vz": m.vz,
                 "hdg": m.hdg
             }
-            self.write_to_pipe("/tmp/gps_feed", response)
-
-
-    def write_to_pipe(self, path, data):
-        if not os.path.exists(path):
-            os.mkfifo(path)
-
-        fifo = open(path, "w")
-        fifo.write(data)
-        fifo.close()
-
-        os.remove(path)
-
+            self.sock.sendto(json.dumps(response), (self.ip, self.port))
 
 def init(mpstate):
     return InteropModule(mpstate)

@@ -1,59 +1,59 @@
-#!/usr/bin/env python
-
-import os
-import socket
 import json
-from MAVProxy.modules.lib import mp_module
+import socket
+
+# Receiving IP
+ip = "127.0.0.1"
+
+# Receiving port
+port = 5006
 
 #
-# Module for the on-board computer (OBC)
+# Will return a dict containing the following properties:
 #
+#   packet_id
+#   time_boot_ms
+#   lat
+#   lon
+#   alt
+#   relative_alt
+#   vx
+#   vy
+#   vz
+#   hdg
+#
+def get_gps_data():
+    sock = socket.socket(socket.AF_INET, # Internet
+                         socket.SOCK_DGRAM) # UDP
+    sock.bind((ip, port))
+
+    while True:
+        data, addr = sock.recvfrom(2048) # buffer size is 1024 bytes
+        #print "gps_data:", data
+	if(json.loads(data)['packet_id'] != 33):
+		continue
+        return json.loads(data)
 
 
-class InteropModule(mp_module.MPModule):
-    def __init__(self, mpstate):
-        super(InteropModule, self).__init__(mpstate, "interopobc", "interoperability module")
+#
+# Will return a dict containing the following properties
+#
+#   packet_id
+#   time_boot_ms
+#   roll
+#   pitch
+#   yaw
+#   rollspeed
+#   pitchspeed
+#   yawspeed
+#
+def get_attitude():
+    sock = socket.socket(socket.AF_INET, # Internet
+                         socket.SOCK_DGRAM) # UDP
+    sock.bind((ip, port))
 
-        # The drone/autopilot firmware ip address like 127.0.0.1
-        self.ip = "127.0.0.1"
-
-        # The port you want to use in order to send your json via UDP
-        self.port = 5006
-
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-    def mavlink_packet(self, m):
-        mtype = m.get_type()
-
-        # https://pixhawk.ethz.ch/mavlink/#ATTITUDE
-        if mtype == "ATTITUDE":
-            response = {
-                "packet_id": 30,
-                "time_boot_ms": m.time_boot_ms,
-                "roll": m.roll,
-                "pitch": m.pitch,
-                "yaw": m.yaw,
-                "rollspeed": m.rollspeed,
-                "pitchspeed": m.pitchspeed,
-                "yawspeed": m.yawspeed
-            }
-            self.sock.sendto(json.dumps(response), (self.ip, self.port))
-
-        # https://pixhawk.ethz.ch/mavlink/#GLOBAL_POSITION_INT
-        elif mtype == "GLOBAL_POSITION_INT":
-            response = {
-                "packet_id": 33,
-                "time_boot_ms": m.time_boot_ms,
-                "lat": m.lat,
-                "lon": m.lon,
-                "alt": m.alt,
-                "relative_alt": m.relative_alt,
-                "vx": m.vx,
-                "vy": m.vy,
-                "vz": m.vz,
-                "hdg": m.hdg
-            }
-            self.sock.sendto(json.dumps(response), (self.ip, self.port))
-
-def init(mpstate):
-    return InteropModule(mpstate)
+    while True:
+        data, addr = sock.recvfrom(2048) # buffer size is 1024 bytes
+        #print "attitude:", data
+        if(json.loads(data)['packet_id'] != 30):
+                continue
+        return json.loads(data)
